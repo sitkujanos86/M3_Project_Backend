@@ -8,13 +8,29 @@ const bookSchema = new Schema(
       required: [true, 'Title is required.'],
       trim: true,
     },
-    author: {
+    organiser: {
       type: String,
       required: [true, 'Author is required.'],
       trim: true,
     },
-    pages: {
+    date: {
+      type: Date,
+      required: [true, 'Pages is required.'],
+    },
+    location: {
+      type: String,
+      required: [true, 'Pages is required.'],
+    },
+    price: {
       type: Number,
+      required: [true, 'Pages is required.'],
+    },
+    description: {
+      type: String,
+      required: [true, 'Pages is required.'],
+    },
+    image: {
+      type: String,
       required: [true, 'Pages is required.'],
     },
   },
