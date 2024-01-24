@@ -1,40 +1,9 @@
 const { Schema, model } = require('mongoose')
 
-// TODO: Please make sure you edit the Book model to whatever makes sense in this case
-const eventSchema = new Schema(
+const userSchema = new Schema(
   {
-    title: {
-      type: String,
-      required: [true, 'Title is required.'],
-      trim: true,
-    },
-    organiser: {
-      type: String,
-      required: [true, 'Author is required.'],
-      trim: true,
-    },
-    date: {
-      type: Date,
-      required: [true, 'Pages is required.'],
-    },
-    location: {
-      type: String,
-      required: [true, 'Pages is required.'],
-    },
-    price: {
-      type: Number,
-    },
-    description: {
-      type: String,
-      required: [true, 'Pages is required.'],
-    },
-    image: {
-      type: String,
-    },
-    createdBy: {
-      type: Types.ObjectId,
-      ref: 'User',
-    },
+    email: { type: String, required: true, trim: true, lowercase: true, unique: true },
+    hashedPassword: { type: String, required: true },
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
@@ -42,6 +11,6 @@ const eventSchema = new Schema(
   }
 )
 
-const Book = model('Event', eventSchema)
+const User = model('User', userSchema)
 
-module.exports = Event
+module.exports = User
