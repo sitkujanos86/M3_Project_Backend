@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose')
 
 // TODO: Please make sure you edit the Book model to whatever makes sense in this case
-const bookSchema = new Schema(
+const eventSchema = new Schema(
   {
     title: {
       type: String,
@@ -23,7 +23,6 @@ const bookSchema = new Schema(
     },
     price: {
       type: Number,
-      required: [true, 'Pages is required.'],
     },
     description: {
       type: String,
@@ -31,7 +30,10 @@ const bookSchema = new Schema(
     },
     image: {
       type: String,
-      required: [true, 'Pages is required.'],
+    },
+    createdBy: {
+      type: Types.ObjectId,
+      ref: 'User',
     },
   },
   {
@@ -40,6 +42,6 @@ const bookSchema = new Schema(
   }
 )
 
-const Book = model('Book', bookSchema)
+const Book = model('Event', eventSchema)
 
 module.exports = Book
