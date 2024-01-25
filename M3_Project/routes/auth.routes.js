@@ -11,6 +11,7 @@ router.get('/', (req, res) => {
 // SIGNUP
 router.post('/signup', async (req, res) => {
     const { email, password } = req.body
+    console.log(req.body);
     try {
         const potentialUser = await User.findOne({ email })
         if (!potentialUser) {
@@ -18,7 +19,7 @@ router.post('/signup', async (req, res) => {
             const hashedPassword = bcrypt.hashSync(password, salt)
             try {
                 await User.create({ email, hashedPassword })
-                res.status(2001).json({ message: 'User created' })
+                res.status(201).json({ message: 'User created' })
             } catch (error) {
                 res.status(500).json({ message: "Problem with creating user" })
             }
