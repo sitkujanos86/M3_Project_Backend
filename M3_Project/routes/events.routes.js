@@ -1,10 +1,8 @@
+const router = require("express").Router();
 const { isAuthenticated } = require("../middlewares/route-guard.middleware");
 const Event = require("../models/Event.model");
-const User = require("../models/User.model");
 
-const router = require("express").Router();
-
-// GET all
+// GET all events
 router.get("/", async (req, res) => {
   try {
     const allEvents = await Event.find();
@@ -26,7 +24,7 @@ router.get("/:eventId", async (req, res) => {
     res.status(500).json({ message: "error while getting the event" });
   }
 });
-// POST one
+// POST one event
 router.post("/", isAuthenticated, async (req, res) => {
   const payload = req.body;
   const { userId } = req.tokenPayload;
@@ -39,7 +37,7 @@ router.post("/", isAuthenticated, async (req, res) => {
     res.status(500).json({ message: "error while creating the event" });
   }
 });
-// PUT one
+// EDIT an event
 router.put("/:eventId", isAuthenticated, async (req, res) => {
   const { userId } = req.tokenPayload;
   const payload = req.body;
@@ -60,7 +58,7 @@ router.put("/:eventId", isAuthenticated, async (req, res) => {
   }
 });
 
-// DELETE one
+// DELETE an event
 router.delete("/:eventId", isAuthenticated, async (req, res) => {
   const { userId } = req.tokenPayload;
   const { eventId } = req.params;
@@ -76,6 +74,33 @@ router.delete("/:eventId", isAuthenticated, async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: "error while deleting the event" });
+  }
+});
+
+// GET event details with comments
+router.get("/:eventId/details", isAuthenticated, async (req, res) => {
+  const { userId } = req.tokenPayload;
+  const { eventId } = req.params;
+  try {
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const comments = await Comment.find({ eventId });
+
+    const eventData = {
+      title: event.title,
+      description: event.description,
+      createdBy: event.createdBy,
+      // We can add the other properties as well here
+      comments,
+    };
+
+    res.status(200).json(eventData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "error while fetching event details" });
   }
 });
 
