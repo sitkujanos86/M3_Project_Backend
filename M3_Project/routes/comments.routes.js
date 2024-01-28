@@ -1,12 +1,19 @@
 const router = require("express").Router();
 const { isAuthenticated } = require("../middlewares/route-guard.middleware");
+const Event = require("../models/Event.model");
 const Comment = require("../models/Comment.model");
 const User = require("../models/User.model");
 
 // GET all comments for an event
-router.get("/events/:eventId", isAuthenticated, async (req, res) => {
+router.get("/events/:eventId/", isAuthenticated, async (req, res) => {
   try {
-    const allComments = await Comment.find({ eventId: req.params.eventId }); //Updated parameter name
+    console.log("Fetching comments for event:", req.params.eventId);
+    const eventExists = await Event.exists({ _id: req.params.eventId });
+    if (!eventExists) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    const allComments = await Comment.find({ event: req.params.eventId }); //Updated parameter name
+    console.log("Comments retrieved:", allComments);
     res.status(200).json(allComments);
   } catch (error) {
     console.log(error);
@@ -14,25 +21,48 @@ router.get("/events/:eventId", isAuthenticated, async (req, res) => {
   }
 });
 
-// GET ONE Comment ON THE DETAIL PAGE
-//   router.get('/:bookId', async (req, res) => {
-//     const { bookId } = req.params
-//     try {
-//       const oneBook = await Book.findById(bookId)
-//       res.status(200).json(oneBook)
-//     } catch (error) {
-//       console.log(error)
-//       res.status(500).json({ message: 'error while getting the book' })
-//     }
-//   })
+// GET comments from a specific user
+router.get("/user/:userId", isAuthenticated, async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const comments = await Comment.find({ createdBy: userId });
+    res.status(200).json(comments);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}),
+  //GET all the comments
+  router.get("/", async (req, res) => {
+    try {
+      const commentList = await Comment.find();
+
+      res.status(200).json(commentList);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+// GET ONE Comment by it's ID ON THE DETAIL PAGE
+router.get("/:commentId", async (req, res) => {
+  const commentId = req.params.commentId;
+  try {
+    const comment = await Comment.findById(commentId);
+    res.status(200).json(comment);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // POST one comment
 router.post("/:eventId", isAuthenticated, async (req, res) => {
   console.log("Received POST request for creating a comment");
   const payload = req.body;
-  const { userId } = req.tokenPayload;
+  const eventId = req.params.eventId;
+  const userId = req.tokenPayload.userId;
   payload.createdBy = userId;
-  payload.eventId = req.params.eventId; // Add the eventId to the payload
+  payload.eventId = eventId; // Add the eventId to the payload
   try {
     const createdComment = await Comment.create(payload);
     res.status(201).json(createdComment);
@@ -42,14 +72,14 @@ router.post("/:eventId", isAuthenticated, async (req, res) => {
     res.status(500).json({ message: "error while creating the Comment" });
   }
 });
-// PUT one
+// UPDATE a comment
 router.put("/:eventId/:commentId", isAuthenticated, async (req, res) => {
   const { userId } = req.tokenPayload;
   const payload = req.body;
   const { commentId } = req.params;
   try {
     const commentToUpdate = await Comment.findById(commentId);
-    if (commentToUpdate.createdBy == commentId && commentToUpdate) {
+    if (commentToUpdate && commentToUpdate.createdBy == userId) {
       const updatedComment = await Comment.findByIdAndUpdate(
         commentId,
         payload,
@@ -67,7 +97,7 @@ router.put("/:eventId/:commentId", isAuthenticated, async (req, res) => {
   }
 });
 
-// DELETE one comment
+// DELETE a comment
 router.delete("/:commentId", isAuthenticated, async (req, res) => {
   const { userId } = req.tokenPayload;
   const { commentId } = req.params;

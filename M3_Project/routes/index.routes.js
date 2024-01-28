@@ -8,7 +8,7 @@ const eventsRouter = require("./events.routes");
 router.use("/events", eventsRouter);
 
 const commentsRouter = require("./comments.routes");
-router.use("/:eventId/comments", commentsRouter);
+router.use("/comments", commentsRouter);
 
 const usersRouter = require("./users.routes");
 router.use("/users", usersRouter);
