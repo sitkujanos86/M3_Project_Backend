@@ -5,7 +5,7 @@ const Comment = require("../models/Comment.model");
 const User = require("../models/User.model");
 
 // GET all comments for an event
-router.get("/events/:eventId/", isAuthenticated, async (req, res) => {
+router.get("/events/:eventId", async (req, res) => {
   try {
     console.log("Fetching comments for event:", req.params.eventId);
     const eventExists = await Event.exists({ _id: req.params.eventId });
