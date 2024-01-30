@@ -14,11 +14,11 @@ const eventSchema = new Schema(
     },
     date: {
       type: Date,
-      required: [true, "Pages is required."],
+      required: [true, "Date is required."],
     },
     location: {
       type: String,
-      required: [true, "Pages is required."],
+      required: [true, "Location is required."],
     },
     price: {
       type: Number,

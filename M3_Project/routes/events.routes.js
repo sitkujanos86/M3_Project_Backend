@@ -62,13 +62,14 @@ router.put("/:eventId", isAuthenticated, async (req, res) => {
 router.delete("/:eventId", isAuthenticated, async (req, res) => {
   const { userId } = req.tokenPayload;
   const { eventId } = req.params;
+  console.log("user", userId, "event", eventId);
   try {
     const eventToDelete = await Event.findById(eventId);
     console.log(eventToDelete, userId);
-    if (eventToDelete.createdBy == userId) {
+    if (eventToDelete.createdBy.equals(userId)) {
       console.log("Deleting");
       await Event.findByIdAndDelete(eventId);
-      res.status(204).json();
+      res.status(204).json({ message: "Event deleted succeffully!" });
     } else {
       res.status(403).json({ message: "you are not the right user" });
     }
