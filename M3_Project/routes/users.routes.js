@@ -4,18 +4,11 @@ const { isAuthenticated } = require("../middlewares/route-guard.middleware");
 
 //get user by ID
 
-router.get("/:userId", isAuthenticated, async (req, res) => {
+router.get("/user/:userId", isAuthenticated, async (req, res) => {
   const { userId } = req.params;
   try {
     const user = await User.findById(userId);
-
-    const userProfile = {
-      username: user.username,
-      // not sure if we need this one: email: user.email,
-      events: user.events,
-      comments: user.comments,
-    };
-    res.status(200).json(userProfile);
+    res.status(200).json(user);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "something went wrong fetching a user" });
