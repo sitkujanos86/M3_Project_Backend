@@ -58,13 +58,13 @@ router.get("/:commentId", async (req, res) => {
 // POST one comment
 router.post("/:eventId", isAuthenticated, async (req, res) => {
   console.log("Received POST request for creating a comment");
-  const payload = req.body;
+  const {description} = req.body;
+  console.log(req.body);
   const eventId = req.params.eventId;
   const userId = req.tokenPayload.userId;
-  payload.createdBy = userId;
-  payload.eventId = eventId; // Add the eventId to the payload
+ 
   try {
-    const createdComment = await Comment.create(payload);
+    const createdComment = await Comment.create({description, createdBy:userId, event:eventId});
     res.status(201).json(createdComment);
     console.log("Comment created successfully");
   } catch (error) {
