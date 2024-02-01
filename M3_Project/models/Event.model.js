@@ -28,7 +28,9 @@ const eventSchema = new Schema(
       required: [true, "Pages is required."],
     },
     image: {
-      type: String,
+      data: Buffer,
+      contentType: String,
+      link: String,
     },
     createdBy: {
       type: Types.ObjectId,
