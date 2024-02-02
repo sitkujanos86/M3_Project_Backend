@@ -24,6 +24,35 @@ router.get("/:eventId", async (req, res) => {
     res.status(500).json({ message: "error while getting the event" });
   }
 });
+
+
+
+
+//get all events of one user
+router.get('/createdBy/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Find events with the specified userId
+    const events = await Event.find({ createdBy: userId });
+
+    // Check if events were found
+    if (events.length === 0) {
+      return res.status(404).json({ message: 'No events found for the specified user.' });
+    }
+
+    // Return the found events
+    res.status(200).json(events);
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
+
+
 // POST one event
 router.post("/", isAuthenticated, async (req, res) => {
   const payload = req.body;
